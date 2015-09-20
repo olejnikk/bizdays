@@ -2,9 +2,11 @@ package com.kolejnik.bizdays.schedule;
 
 import com.kolejnik.bizdays.BusinessDayCalculator;
 import com.kolejnik.bizdays.BusinessTimeCalculator;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +34,7 @@ public class BusinessSchedule implements BusinessTimeCalculator {
             return minus(dateTime, -hoursToAdd);
         }
         long secondsToAdd = hoursToAdd * 3600;
-        while (secondsToAdd > 0) {
+        while (secondsToAdd >= 0) {
             if (!isBusinessTime(dateTime)) {
                 dateTime = businessDayStartAfter(dateTime);
             }
@@ -55,21 +57,33 @@ public class BusinessSchedule implements BusinessTimeCalculator {
         if (hoursToSubtract < 0) {
             return plus(dateTime, -hoursToSubtract);
         }
-        throw new NotImplementedException();
+        long secondsToSubstract = hoursToSubtract * 3600;
+        while (secondsToSubstract >= 0) {
+            if (!isBusinessTime(dateTime)) {
+                dateTime = businessDayEndBefore(dateTime);
+            }
+
+            BusinessDay businessDay = getBusinessDay(dateTime);
+            long secondsLeft = Duration.between(businessDay.getStartTime(),
+                    dateTime.toLocalTime()).get(ChronoUnit.SECONDS);
+            if (secondsToSubstract <= secondsLeft) {
+                return dateTime.minusSeconds(secondsToSubstract);
+            }
+            secondsToSubstract -= secondsLeft;
+            dateTime = businessDayEndBefore(dateTime);
+        }
+
+        return dateTime;
     }
 
     @Override
     public LocalDateTime businessDayStartAfter(LocalDateTime dateTime) {
         LocalDate date = dateTime.toLocalDate();
 
-        if (businessCalendar.isBusinessDay(date)) {
-            BusinessDay businessDay = getBusinessDay(date);
-            if (businessDay.getStartTime().isAfter(dateTime.toLocalTime())) {
-                return LocalDateTime.of(dateTime.toLocalDate(), businessDay.getStartTime());
-            }
+        if (!businessCalendar.isBusinessDay(date) || !isBeforeBusinessDayStart(dateTime)) {
+            date = businessCalendar.businessDayAfter(date);
         }
 
-        date = businessCalendar.businessDayAfter(date);
         BusinessDay businessDay = getBusinessDay(date);
         return LocalDateTime.of(date, businessDay.getStartTime());
     }
@@ -78,21 +92,47 @@ public class BusinessSchedule implements BusinessTimeCalculator {
     public LocalDateTime businessDayEndAfter(LocalDateTime dateTime) {
         LocalDate date = dateTime.toLocalDate();
 
-        if (businessCalendar.isBusinessDay(date)) {
-            BusinessDay businessDay = getBusinessDay(date);
-            if (businessDay.getEndTime().isAfter(dateTime.toLocalTime())) {
-                return LocalDateTime.of(dateTime.toLocalDate(), businessDay.getEndTime());
-            }
+        if (!businessCalendar.isBusinessDay(date) || !isBeforeBusinessDayEnd(dateTime)) {
+            date = businessCalendar.businessDayAfter(date);
         }
 
-        date = businessCalendar.businessDayAfter(date);
         BusinessDay businessDay = getBusinessDay(date);
         return LocalDateTime.of(date, businessDay.getEndTime());
     }
 
-    private LocalTime getBusinessDayEnd(LocalDate date) {
+    @Override
+    public LocalDateTime businessDayStartBefore(LocalDateTime dateTime) {
+        LocalDate date = dateTime.toLocalDate();
+
+        if (!businessCalendar.isBusinessDay(date) || isBeforeBusinessDayStart(dateTime)) {
+            date = businessCalendar.businessDayBefore(date);
+        }
+
         BusinessDay businessDay = getBusinessDay(date);
-        return businessDay.getEndTime();
+        return LocalDateTime.of(date, businessDay.getStartTime());
+    }
+
+    @Override
+    public LocalDateTime businessDayEndBefore(LocalDateTime dateTime) {
+        LocalDate date = dateTime.toLocalDate();
+
+        if (!businessCalendar.isBusinessDay(date) || isBeforeBusinessDayEnd(dateTime)) {
+            date = businessCalendar.businessDayBefore(date);
+        }
+
+        BusinessDay businessDay = getBusinessDay(date);
+        return LocalDateTime.of(date, businessDay.getEndTime());
+    }
+
+    private boolean isBeforeBusinessDayEnd(LocalDateTime dateTime) {
+        BusinessDay businessDay = getBusinessDay(dateTime.toLocalDate());
+        return businessDay.getEndTime().equals(dateTime.toLocalTime()) ||
+                businessDay.getEndTime().isAfter(dateTime.toLocalTime());
+    }
+
+    private boolean isBeforeBusinessDayStart(LocalDateTime dateTime) {
+        BusinessDay businessDay = getBusinessDay(dateTime.toLocalDate());
+        return businessDay.getStartTime().isAfter(dateTime.toLocalTime());
     }
 
     private BusinessDay getBusinessDay(LocalDateTime dateTime) {

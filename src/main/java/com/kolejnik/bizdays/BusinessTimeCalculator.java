@@ -13,4 +13,8 @@ public interface BusinessTimeCalculator {
     public LocalDateTime businessDayStartAfter(LocalDateTime dateTime);
 
     public LocalDateTime businessDayEndAfter(LocalDateTime dateTime);
+
+    public LocalDateTime businessDayStartBefore(LocalDateTime dateTime);
+
+    public LocalDateTime businessDayEndBefore(LocalDateTime dateTime);
 }
