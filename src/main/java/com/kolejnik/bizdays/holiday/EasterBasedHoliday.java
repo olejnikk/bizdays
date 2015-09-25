@@ -29,6 +29,13 @@ public class EasterBasedHoliday extends MovableYearlyHoliday {
             return easterDay.plusDays(49);
         }
     };
+    public static EasterBasedHoliday GOOD_FRIDAY = new EasterBasedHoliday() {
+        @Override
+        public LocalDate calculateByYear(int year) {
+            LocalDate easterDay = EASTER.getByYear(year);
+            return easterDay.minusDays(2);
+        }
+    };
 
     @Override
     public LocalDate calculateByYear(int year) {
