@@ -16,28 +16,28 @@ public class PolishBusinessCalendarFactory implements BusinessCalendarFactory {
     public static Holiday ALL_SAINTS_DAY = new FixedYearlyHoliday(Month.NOVEMBER, 1);
     public static Holiday INDEPENDENCE_DAY = new FixedYearlyHoliday(Month.NOVEMBER, 11);
 
-    private static BusinessCalendar polishBusinessCalendar;
+    private static BusinessCalendar businessCalendar;
 
     public BusinessCalendar getInstance() {
-        if (PolishBusinessCalendarFactory.polishBusinessCalendar != null) {
-            return PolishBusinessCalendarFactory.polishBusinessCalendar;
+        if (businessCalendar != null) {
+            return businessCalendar;
         }
-        BusinessCalendar polishBusinessCalendar = new BusinessCalendar();
-        polishBusinessCalendar.addHoliday(CronHoliday.SATURDAY);
-        polishBusinessCalendar.addHoliday(CronHoliday.SUNDAY);
-        polishBusinessCalendar.addHoliday(FixedYearlyHoliday.NEW_YEAR);
-        polishBusinessCalendar.addHoliday(FixedYearlyHoliday.CHRISTMAS);
-        polishBusinessCalendar.addHoliday(FixedYearlyHoliday.BOXING_DAY);
-        polishBusinessCalendar.addHoliday(EasterBasedHoliday.EASTER);
-        polishBusinessCalendar.addHoliday(EasterBasedHoliday.EASTER_MONDAY);
-        polishBusinessCalendar.addHoliday(EasterBasedHoliday.CORPUS_CHRISTI);
-        polishBusinessCalendar.addHoliday(EasterBasedHoliday.GREEN_WEEK);
-        polishBusinessCalendar.addHoliday(EPIPHANY);
-        polishBusinessCalendar.addHoliday(WORKERS_DAY);
-        polishBusinessCalendar.addHoliday(MAY_3RD_CONSTITUTION_DAY);
-        polishBusinessCalendar.addHoliday(ASSUMPTION);
-        polishBusinessCalendar.addHoliday(ALL_SAINTS_DAY);
-        polishBusinessCalendar.addHoliday(INDEPENDENCE_DAY);
-        return polishBusinessCalendar;
+        businessCalendar = new BusinessCalendar();
+        businessCalendar.addHoliday(CronHoliday.SATURDAY);
+        businessCalendar.addHoliday(CronHoliday.SUNDAY);
+        businessCalendar.addHoliday(FixedYearlyHoliday.NEW_YEAR);
+        businessCalendar.addHoliday(FixedYearlyHoliday.CHRISTMAS);
+        businessCalendar.addHoliday(FixedYearlyHoliday.BOXING_DAY);
+        businessCalendar.addHoliday(EasterBasedHoliday.EASTER);
+        businessCalendar.addHoliday(EasterBasedHoliday.EASTER_MONDAY);
+        businessCalendar.addHoliday(EasterBasedHoliday.CORPUS_CHRISTI);
+        businessCalendar.addHoliday(EasterBasedHoliday.GREEN_WEEK);
+        businessCalendar.addHoliday(EPIPHANY);
+        businessCalendar.addHoliday(WORKERS_DAY);
+        businessCalendar.addHoliday(MAY_3RD_CONSTITUTION_DAY);
+        businessCalendar.addHoliday(ASSUMPTION);
+        businessCalendar.addHoliday(ALL_SAINTS_DAY);
+        businessCalendar.addHoliday(INDEPENDENCE_DAY);
+        return businessCalendar;
     }
 }
