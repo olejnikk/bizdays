@@ -3,7 +3,6 @@ package com.kolejnik.bizdays;
 import com.kolejnik.bizdays.calendar.BusinessCalendar;
 import com.kolejnik.bizdays.calendar.BusinessCalendarFactory;
 import com.kolejnik.bizdays.calendar.PolishBusinessCalendarFactory;
-import com.kolejnik.bizdays.holiday.EasterBasedHoliday;
 import com.kolejnik.bizdays.schedule.BusinessSchedule;
 
 import java.text.ParseException;
@@ -20,8 +19,7 @@ public class Demo {
         int days = calendar.businessDaysBetween(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 12, 31));
         System.out.println("Business days in 2016: " + days);
 
-        BusinessSchedule schedule = new BusinessSchedule();
-        schedule.setBusinessCalendar(calendar);
+        BusinessSchedule schedule = new BusinessSchedule(calendar);
 
         System.out.println(schedule.businessDayStartAfter(LocalDateTime.now()));
         System.out.println(schedule.businessDayEndAfter(LocalDateTime.now()));

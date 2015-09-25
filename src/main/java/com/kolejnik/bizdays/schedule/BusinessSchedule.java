@@ -2,12 +2,12 @@ package com.kolejnik.bizdays.schedule;
 
 import com.kolejnik.bizdays.BusinessDayCalculator;
 import com.kolejnik.bizdays.BusinessTimeCalculator;
+import com.kolejnik.bizdays.calendar.BusinessCalendar;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +18,10 @@ public class BusinessSchedule implements BusinessTimeCalculator {
     private BusinessDay defaultBusinessDay = new BusinessDay(8, 0, 16, 0);
 
     private Map<DayOfWeek, BusinessDay> businessDays;
+
+    public BusinessSchedule(BusinessCalendar calendar) {
+        this.businessCalendar = calendar;
+    }
 
     @Override
     public boolean isBusinessTime(LocalDateTime dateTime) {
@@ -30,22 +34,30 @@ public class BusinessSchedule implements BusinessTimeCalculator {
 
     @Override
     public LocalDateTime plus(LocalDateTime dateTime, int hoursToAdd) {
-        if (hoursToAdd < 0) {
-            return minus(dateTime, -hoursToAdd);
+        return plus(dateTime, Duration.ofHours(hoursToAdd));
+    }
+
+    @Override
+    public LocalDateTime minus(LocalDateTime dateTime, int hoursToSubtract) {
+        return minus(dateTime, Duration.ofHours(hoursToSubtract));
+    }
+
+    @Override
+    public LocalDateTime plus(LocalDateTime dateTime, Duration duration) {
+        if (duration.isNegative()) {
+            return minus(dateTime, duration.negated());
         }
-        long secondsToAdd = hoursToAdd * 3600;
-        while (secondsToAdd >= 0) {
+        while (!duration.isZero()) {
             if (!isBusinessTime(dateTime)) {
                 dateTime = businessDayStartAfter(dateTime);
             }
 
             BusinessDay businessDay = getBusinessDay(dateTime);
-            long secondsLeft = Duration.between(dateTime.toLocalTime(),
-                    businessDay.getEndTime()).get(ChronoUnit.SECONDS);
-            if (secondsToAdd <= secondsLeft) {
-                return dateTime.plusSeconds(secondsToAdd);
+            Duration timeLeft = Duration.between(dateTime.toLocalTime(), businessDay.getEndTime());
+            if (duration.compareTo(timeLeft) < 0) {
+                return dateTime.plus(duration);
             }
-            secondsToAdd -= secondsLeft;
+            duration = duration.minus(timeLeft);
             dateTime = businessDayStartAfter(dateTime);
         }
 
@@ -53,23 +65,22 @@ public class BusinessSchedule implements BusinessTimeCalculator {
     }
 
     @Override
-    public LocalDateTime minus(LocalDateTime dateTime, int hoursToSubtract) {
-        if (hoursToSubtract < 0) {
-            return plus(dateTime, -hoursToSubtract);
+    public LocalDateTime minus(LocalDateTime dateTime, Duration duration) {
+        if (duration.isNegative()) {
+            return plus(dateTime, duration.negated());
         }
-        long secondsToSubstract = hoursToSubtract * 3600;
-        while (secondsToSubstract >= 0) {
+
+        while (!duration.isZero()) {
             if (!isBusinessTime(dateTime)) {
                 dateTime = businessDayEndBefore(dateTime);
             }
 
             BusinessDay businessDay = getBusinessDay(dateTime);
-            long secondsLeft = Duration.between(businessDay.getStartTime(),
-                    dateTime.toLocalTime()).get(ChronoUnit.SECONDS);
-            if (secondsToSubstract <= secondsLeft) {
-                return dateTime.minusSeconds(secondsToSubstract);
+            Duration timeLeft = Duration.between(businessDay.getStartTime(), dateTime.toLocalTime());
+            if (duration.compareTo(timeLeft) < 0) {
+                return dateTime.minus(duration);
             }
-            secondsToSubstract -= secondsLeft;
+            duration = duration.minus(timeLeft);
             dateTime = businessDayEndBefore(dateTime);
         }
 
@@ -124,6 +135,20 @@ public class BusinessSchedule implements BusinessTimeCalculator {
         return LocalDateTime.of(date, businessDay.getEndTime());
     }
 
+    public BusinessDay putBusinessDay(DayOfWeek dayOfWeek, BusinessDay businessDay) {
+        if (businessDays == null) {
+            businessDays = new HashMap<>();
+        }
+        return businessDays.put(dayOfWeek, businessDay);
+    }
+
+    public BusinessDay removeBusinessDay(DayOfWeek dayOfWeek) {
+        if (businessDays != null) {
+            return businessDays.remove(dayOfWeek);
+        }
+        return null;
+    }
+
     private boolean isBeforeBusinessDayEnd(LocalDateTime dateTime) {
         BusinessDay businessDay = getBusinessDay(dateTime.toLocalDate());
         return businessDay.getEndTime().equals(dateTime.toLocalTime()) ||
@@ -149,20 +174,6 @@ public class BusinessSchedule implements BusinessTimeCalculator {
         return defaultBusinessDay;
     }
 
-    private BusinessDay putBusinessDay(DayOfWeek dayOfWeek, BusinessDay businessDay) {
-        if (businessDays == null) {
-            businessDays = new HashMap<>();
-        }
-        return businessDays.put(dayOfWeek, businessDay);
-    }
-
-    private BusinessDay removeBusinessDay(DayOfWeek dayOfWeek) {
-        if (businessDays != null) {
-            return businessDays.remove(dayOfWeek);
-        }
-        return null;
-    }
-
     public BusinessDay getDefaultBusinessDay() {
         return defaultBusinessDay;
     }
@@ -186,4 +197,5 @@ public class BusinessSchedule implements BusinessTimeCalculator {
     public void setBusinessCalendar(BusinessDayCalculator businessCalendar) {
         this.businessCalendar = businessCalendar;
     }
+
 }

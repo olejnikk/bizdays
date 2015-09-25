@@ -1,5 +1,6 @@
 package com.kolejnik.bizdays;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 public interface BusinessTimeCalculator {
@@ -9,6 +10,10 @@ public interface BusinessTimeCalculator {
     public LocalDateTime plus(LocalDateTime dateTime, int hoursToAdd);
 
     public LocalDateTime minus(LocalDateTime dateTime, int hoursToSubtract);
+
+    public LocalDateTime plus(LocalDateTime dateTime, Duration duration);
+
+    public LocalDateTime minus(LocalDateTime dateTime, Duration duration);
 
     public LocalDateTime businessDayStartAfter(LocalDateTime dateTime);
 
