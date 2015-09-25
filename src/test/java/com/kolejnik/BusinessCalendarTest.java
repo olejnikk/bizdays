@@ -1,5 +1,6 @@
 package com.kolejnik;
 
+import com.kolejnik.bizdays.calendar.BusinessCalendar;
 import com.kolejnik.bizdays.calendar.BusinessCalendarFactory;
 import com.kolejnik.bizdays.calendar.PolishBusinessCalendarFactory;
 import com.kolejnik.bizdays.holiday.CronHoliday;
@@ -10,10 +11,11 @@ import org.junit.Test;
 
 import java.time.LocalDate;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class PolishBusinessCalendarTest {
+public class BusinessCalendarTest {
 
     private BusinessCalendarFactory pbcf = new PolishBusinessCalendarFactory();
 
@@ -75,6 +77,60 @@ public class PolishBusinessCalendarTest {
             LocalDate date = LocalDate.parse(dateStr);
             assertTrue(holiday.isHoliday(date));
         }
+    }
+
+    @Test
+    public void testIsBusinessDay() {
+        BusinessCalendar calendar = pbcf.getInstance();
+        LocalDate date = LocalDate.of(2016, 12, 23);
+        assertTrue(calendar.isBusinessDay(date));
+    }
+
+    @Test
+    public void testBusinessDayAfter() {
+        BusinessCalendar calendar = pbcf.getInstance();
+        LocalDate date = LocalDate.of(2016, 12, 23);
+        LocalDate nbd = calendar.businessDayAfter(date);
+        assertEquals(LocalDate.of(2016, 12, 27), nbd);
+    }
+
+    @Test
+    public void testBusinessDayBefore() {
+        BusinessCalendar calendar = pbcf.getInstance();
+        LocalDate date = LocalDate.of(2016, 1, 13);
+        LocalDate nbd = calendar.businessDayBefore(date);
+        assertEquals(LocalDate.of(2016, 1, 12), nbd);
+    }
+
+    @Test
+    public void testBusinessDaysBetween() {
+        BusinessCalendar calendar = pbcf.getInstance();
+        LocalDate from = LocalDate.of(2016, 1, 13);
+        LocalDate to = LocalDate.of(2016, 1, 13);
+        assertEquals(1, calendar.businessDaysBetween(from, to));
+
+        to = LocalDate.of(2016, 1, 14);
+        assertEquals(2, calendar.businessDaysBetween(from, to));
+
+        from = LocalDate.of(2016, 1, 1);
+        to = LocalDate.of(2016, 12, 31);
+        assertEquals(252, calendar.businessDaysBetween(from, to));
+    }
+
+    @Test
+    public void testPlus() {
+        BusinessCalendar calendar = pbcf.getInstance();
+        LocalDate date = LocalDate.of(2016, 1, 13);
+        assertEquals(LocalDate.of(2016, 1, 20), calendar.plus(date, 5));
+        assertEquals(LocalDate.of(2016, 1, 5), calendar.plus(date, -5));
+    }
+
+    @Test
+    public void testMinus() {
+        BusinessCalendar calendar = pbcf.getInstance();
+        LocalDate date = LocalDate.of(2016, 1, 13);
+        assertEquals(LocalDate.of(2016, 1, 5), calendar.minus(date, 5));
+        assertEquals(LocalDate.of(2016, 1, 20), calendar.minus(date, -5));
     }
 
 }
