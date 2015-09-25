@@ -30,3 +30,47 @@ Java date and time calculator for operations on business days and working time s
     ├── BusinessDayCalculator        # business days methods
     └── BusinessTimeCalculator       # business time methods
 
+## Examples
+
+#### Business days operations
+```java
+BusinessCalendarFactory factory = new AmericanBusinessCalendarFactory();
+BusinessCalendar calendar = factory.getInstance();
+
+LocalDate nbd = calendar.nextBusinessDay();
+LocalDate next5Days = calendar.plus(LocalDate.now(), 5);
+int workingDays2016 = calendar.businessDaysBetween(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 12, 31));
+```
+
+#### Work time operations
+```java
+BusinessSchedule schedule = new BusinessSchedule(calendar);
+        
+boolean workNow = schedule.isBusinessTime(LocalDateTime.now());
+LocalDateTime next16h = schedule.plus(LocalDateTime.now(), 16);
+LocalDateTime next15min = schedule.plus(LocalDateTime.now(), Duration.ofMinutes(15));
+```
+
+#### Custom business calendar
+```java
+BusinessCalendar calendar = new BusinessCalendar();
+calendar.addHoliday(CronHoliday.SATURDAY);
+calendar.addHoliday(CronHoliday.SUNDAY);
+calendar.addHoliday(FixedYearlyHoliday.NEW_YEAR);
+calendar.addHoliday(FixedYearlyHoliday.CHRISTMAS);
+calendar.addHoliday(EasterBasedHoliday.EASTER);
+calendar.addHoliday(EasterBasedHoliday.EASTER_MONDAY);
+
+// Valentine's Day
+calendar.addHoliday(new FixedYearlyHoliday(Month.FEBRUARY, 14));
+// and every first thursday in month
+calendar.addHoliday(new CronHoliday("* * * ? * THU#1 *"));
+```
+
+#### Custom business schedule
+Let's assume that your company works from 7am to 3pm except fridays, when it starts at 9am and closes at 2pm.
+```java
+BusinessSchedule schedule = new BusinessSchedule(calendar);
+schedule.setDefaultBusinessDay(new BusinessDay(LocalTime.of(7, 0), LocalTime.of(15, 0)));
+schedule.putBusinessDay(DayOfWeek.FRIDAY, new BusinessDay(9, 0, 14, 0));
+```
