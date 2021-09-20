@@ -1,5 +1,7 @@
 package com.kolejnik;
 
+import com.kolejnik.bizdays.calendar.AmericanBusinessCalendarFactory;
+import com.kolejnik.bizdays.calendar.BritishBusinessCalendarFactory;
 import com.kolejnik.bizdays.calendar.BusinessCalendar;
 import com.kolejnik.bizdays.calendar.BusinessCalendarFactory;
 import com.kolejnik.bizdays.calendar.PolishBusinessCalendarFactory;
@@ -131,6 +133,22 @@ public class BusinessCalendarTest {
         LocalDate date = LocalDate.of(2016, 1, 13);
         assertEquals(LocalDate.of(2016, 1, 5), calendar.minus(date, 5));
         assertEquals(LocalDate.of(2016, 1, 20), calendar.minus(date, -5));
+    }
+
+    @Test
+    public void shouldBuildAmericanCalendar() {
+        BusinessCalendarFactory factory = new AmericanBusinessCalendarFactory();
+        BusinessCalendar calendar = factory.getInstance();
+
+        calendar.businessDayAfter(LocalDate.now());
+    }
+
+    @Test
+    public void shouldBuildBritishCalendar() {
+        BusinessCalendarFactory factory = new BritishBusinessCalendarFactory();
+        BusinessCalendar calendar = factory.getInstance();
+
+        calendar.businessDayAfter(LocalDate.now());
     }
 
 }
