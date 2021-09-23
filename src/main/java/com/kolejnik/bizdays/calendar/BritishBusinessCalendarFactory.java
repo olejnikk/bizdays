@@ -19,7 +19,7 @@ public class BritishBusinessCalendarFactory implements BusinessCalendarFactory {
         if (businessCalendar != null) {
             return businessCalendar;
         }
-
+        businessCalendar = new BusinessCalendar();
         businessCalendar.addHoliday(CronHoliday.SATURDAY);
         businessCalendar.addHoliday(CronHoliday.SUNDAY);
         businessCalendar.addHoliday(FixedYearlyHoliday.NEW_YEAR);
