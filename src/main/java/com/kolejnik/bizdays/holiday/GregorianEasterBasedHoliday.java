@@ -2,34 +2,31 @@ package com.kolejnik.bizdays.holiday;
 
 import java.time.LocalDate;
 
-/*
- * GREGORIAN CALENDAR ONLY!!
- */
-public class EasterBasedHoliday extends MovableYearlyHoliday {
+public class GregorianEasterBasedHoliday extends MovableYearlyHoliday {
 
-    public static EasterBasedHoliday EASTER = new EasterBasedHoliday();
-    public static EasterBasedHoliday EASTER_MONDAY = new EasterBasedHoliday() {
+    public static final GregorianEasterBasedHoliday EASTER = new GregorianEasterBasedHoliday();
+    public static final GregorianEasterBasedHoliday EASTER_MONDAY = new GregorianEasterBasedHoliday() {
         @Override
         public LocalDate calculateByYear(int year) {
             LocalDate easterDay = EASTER.getByYear(year);
             return easterDay.plusDays(1);
         }
     };
-    public static EasterBasedHoliday CORPUS_CHRISTI = new EasterBasedHoliday() {
+    public static final GregorianEasterBasedHoliday CORPUS_CHRISTI = new GregorianEasterBasedHoliday() {
         @Override
         public LocalDate calculateByYear(int year) {
             LocalDate easterDay = EASTER.getByYear(year);
             return easterDay.plusDays(60);
         }
     };
-    public static EasterBasedHoliday GREEN_WEEK = new EasterBasedHoliday() {
+    public static final GregorianEasterBasedHoliday GREEN_WEEK = new GregorianEasterBasedHoliday() {
         @Override
         public LocalDate calculateByYear(int year) {
             LocalDate easterDay = EASTER.getByYear(year);
             return easterDay.plusDays(49);
         }
     };
-    public static EasterBasedHoliday GOOD_FRIDAY = new EasterBasedHoliday() {
+    public static final GregorianEasterBasedHoliday GOOD_FRIDAY = new GregorianEasterBasedHoliday() {
         @Override
         public LocalDate calculateByYear(int year) {
             LocalDate easterDay = EASTER.getByYear(year);
@@ -55,10 +52,11 @@ public class EasterBasedHoliday extends MovableYearlyHoliday {
         int k = c % 4;
         int l = (32 + 2 * e + 2 * i - h - k) % 7;
         int m = (a + 11 * h + 22 * l) / 451;
-        int p = (h + l - 7 * m + 114) % 31;
+        int n = h + l - 7 * m + 114;
+        int o = n % 31;
 
-        int day = p + 1;
-        int month = (h + l - 7 * m + 114) / 31;
+        int day = o + 1;
+        int month = n / 31;
 
         return LocalDate.of(year, month, day);
     }

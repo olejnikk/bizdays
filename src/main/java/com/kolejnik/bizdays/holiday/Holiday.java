@@ -2,13 +2,14 @@ package com.kolejnik.bizdays.holiday;
 
 import java.time.LocalDate;
 
-public abstract class Holiday {
+public interface Holiday {
 
-    public abstract boolean isHoliday(LocalDate date);
+    boolean isHoliday(LocalDate date);
 
-    public abstract LocalDate nextAfter(LocalDate date);
+    LocalDate nextAfter(LocalDate date);
 
-    public LocalDate next() {
+    default LocalDate next() {
         return nextAfter(LocalDate.now());
     }
+
 }

@@ -1,12 +1,11 @@
 package com.kolejnik.bizdays.calendar;
 
-import com.kolejnik.bizdays.holiday.*;
+import com.kolejnik.bizdays.holiday.CronHoliday;
+import com.kolejnik.bizdays.holiday.GregorianEasterBasedHoliday;
+import com.kolejnik.bizdays.holiday.FixedYearlyHoliday;
+import com.kolejnik.bizdays.holiday.Holiday;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.Month;
-
-public class BritishBusinessCalendarFactory implements BusinessCalendarFactory {
+public class BritishBusinessCalendar extends BusinessCalendar {
 
     public static final Holiday MAY_DAY_BANK = new CronHoliday("* * * ? MAY MON#1 *");
     public static final Holiday SPRING_BANK = new CronHoliday("* * * ? MAY 2L *");
@@ -14,8 +13,7 @@ public class BritishBusinessCalendarFactory implements BusinessCalendarFactory {
 
     private static BusinessCalendar businessCalendar;
 
-    @Override
-    public BusinessCalendar getInstance() {
+    public static BusinessCalendar getInstance() {
         if (businessCalendar != null) {
             return businessCalendar;
         }
@@ -23,8 +21,8 @@ public class BritishBusinessCalendarFactory implements BusinessCalendarFactory {
         businessCalendar.addHoliday(CronHoliday.SATURDAY);
         businessCalendar.addHoliday(CronHoliday.SUNDAY);
         businessCalendar.addHoliday(FixedYearlyHoliday.NEW_YEAR);
-        businessCalendar.addHoliday(EasterBasedHoliday.GOOD_FRIDAY);
-        businessCalendar.addHoliday(EasterBasedHoliday.EASTER_MONDAY);
+        businessCalendar.addHoliday(GregorianEasterBasedHoliday.GOOD_FRIDAY);
+        businessCalendar.addHoliday(GregorianEasterBasedHoliday.EASTER_MONDAY);
         businessCalendar.addHoliday(MAY_DAY_BANK);
         businessCalendar.addHoliday(SPRING_BANK);
         businessCalendar.addHoliday(LATE_SUMMER_BANK);
@@ -33,4 +31,5 @@ public class BritishBusinessCalendarFactory implements BusinessCalendarFactory {
 
         return businessCalendar;
     }
+
 }

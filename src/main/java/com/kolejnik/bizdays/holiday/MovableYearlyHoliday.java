@@ -6,11 +6,10 @@ import java.util.Map;
 
 public abstract class MovableYearlyHoliday extends YearlyHoliday {
 
-    // TODO: parametrize them
-    private final static int MIN_CACHED_YEAR = 1900;
-    private final static int MAX_CACHED_YEAR = 2100;
+    private static final int MIN_CACHED_YEAR = 1900;
+    private static final int MAX_CACHED_YEAR = 2999;
 
-    protected Map<Integer, LocalDate> cachedDates = new HashMap<Integer, LocalDate>();
+    protected Map<Integer, LocalDate> cachedDates = new HashMap<>();
 
     protected abstract LocalDate calculateByYear(int year);
 

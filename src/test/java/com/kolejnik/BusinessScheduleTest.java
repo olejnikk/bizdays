@@ -1,7 +1,6 @@
 package com.kolejnik;
 
-import com.kolejnik.bizdays.calendar.BusinessCalendarFactory;
-import com.kolejnik.bizdays.calendar.PolishBusinessCalendarFactory;
+import com.kolejnik.bizdays.calendar.PolishBusinessCalendar;
 import com.kolejnik.bizdays.schedule.BusinessDay;
 import com.kolejnik.bizdays.schedule.BusinessSchedule;
 import org.junit.Test;
@@ -17,8 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 public class BusinessScheduleTest {
 
-    private BusinessCalendarFactory pbcf = new PolishBusinessCalendarFactory();
-    private BusinessSchedule schedule = new BusinessSchedule(pbcf.getInstance());
+    private BusinessSchedule schedule = new BusinessSchedule(PolishBusinessCalendar.getInstance());
 
     {
         schedule.putBusinessDay(DayOfWeek.MONDAY, new BusinessDay(LocalTime.of(8, 0), LocalTime.of(16, 0)));

@@ -13,29 +13,27 @@ Java date and time calculator for operations on business days and working time s
 
 ## Project structure
     ...
-    ├── calendar                     # business days
+    ├── calendar                         # business days
     │   ├── BusinessCalendar
-    │   ├── BusinessCalendarFactory  # factory for national business calendars
-    │   └── ...                      # place for national business calendar implementations
-    ├── holiday                      # holiday definitions
+    │   └── ...                          # place for national business calendar implementations
+    ├── holiday                          # holiday definitions
     │   ├── CronHoliday
-    │   ├── EasterBasedHoliday
+    │   ├── GregorianEasterBasedHoliday
     │   ├── FixedYearlyHoliday
     │   ├── Holiday
     │   ├── MovableYearlyHoliday
     │   └── YearlyHoliday
-    ├── schedule                     # work time 
-    │   ├── BusinessDay              # start/end of work time
-    │   └── BusinessSchedule         # BusinessTimeCalculator implementation
-    ├── BusinessDayCalculator        # business days methods
-    └── BusinessTimeCalculator       # business time methods
+    ├── schedule                         # work time
+    │   ├── BusinessDay                  # start/end of work time
+    │   └── BusinessSchedule             # BusinessTimeCalculator implementation
+    ├── BusinessDayCalculator            # business days methods
+    └── BusinessTimeCalculator           # business time methods
 
 ## Examples
 
 #### Business days operations
 ```java
-BusinessCalendarFactory factory = new AmericanBusinessCalendarFactory();
-BusinessCalendar calendar = factory.getInstance();
+BusinessCalendar calendar = AmericanBusinessCalendar.getInstance();
 
 LocalDate nbd = calendar.nextBusinessDay();
 LocalDate next5Days = calendar.plus(LocalDate.now(), 5);
@@ -61,9 +59,9 @@ calendar.addHoliday(FixedYearlyHoliday.CHRISTMAS);
 calendar.addHoliday(EasterBasedHoliday.EASTER);
 calendar.addHoliday(EasterBasedHoliday.EASTER_MONDAY);
 
-// Valentine's Day
+// add Valentine's Day as a holiday
 calendar.addHoliday(new FixedYearlyHoliday(Month.FEBRUARY, 14));
-// and every first thursday in month
+// as well as every first thursday in a month
 calendar.addHoliday(new CronHoliday("* * * ? * THU#1 *"));
 ```
 

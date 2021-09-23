@@ -5,9 +5,8 @@ import java.time.LocalTime;
 
 public class BusinessDay {
 
-    private LocalTime startTime;
-
-    private LocalTime endTime;
+    private final LocalTime startTime;
+    private final LocalTime endTime;
 
     public boolean contains(LocalTime time) {
         return startTime.compareTo(time) * endTime.compareTo(time) <= 0;
@@ -31,15 +30,8 @@ public class BusinessDay {
         return startTime;
     }
 
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
-    }
-
     public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalTime endTime) {
-        this.endTime = endTime;
-    }
 }

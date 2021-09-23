@@ -5,6 +5,7 @@ import com.kolejnik.bizdays.InvalidHolidayException;
 import com.kolejnik.bizdays.holiday.Holiday;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,9 +16,9 @@ public class BusinessCalendar implements BusinessDayCalculator {
      * 4 years. If there is no holiday in MAX_BUSINESS_DAYS_BLOCK days
      * there must be something wrong with the calendar.
      */
-    private final static int MAX_BUSINESS_DAYS_BLOCK = 1461;
+    private static final int MAX_BUSINESS_DAYS_BLOCK = 1461;
 
-    private Set<Holiday> holidays;
+    private final Set<Holiday> holidays = new HashSet<>();
 
     @Override
     public boolean isBusinessDay(LocalDate date) {
@@ -64,9 +65,10 @@ public class BusinessCalendar implements BusinessDayCalculator {
     @Override
     public int businessDaysBetween(LocalDate from, LocalDate to) {
         if (to.isBefore(from)) {
-            return businessDaysBetween(to, from);
+            throw new IllegalArgumentException("Invalid date range: " + from + " - " + to);
         }
-        LocalDate date = from, endDate = to.plusDays(1);
+        LocalDate date = from;
+        LocalDate endDate = to.plusDays(1);
         int businessDaysCount = 0;
         while (date.isBefore(endDate)) {
             if (isBusinessDay(date)) {
@@ -94,24 +96,19 @@ public class BusinessCalendar implements BusinessDayCalculator {
     }
 
     public boolean addHoliday(Holiday holiday) {
-        if (holidays == null) {
-            holidays = new HashSet<>();
-        }
         return holidays.add(holiday);
     }
 
+    public void addHolidays(Collection<Holiday> holidays) {
+        this.holidays.addAll(holidays);
+    }
+
     public boolean removeHoliday(Holiday holiday) {
-        if (holidays == null) {
-            return false;
-        }
         return holidays.remove(holiday);
     }
 
     public Set<Holiday> getHolidays() {
-        return holidays;
+        return new HashSet<>(holidays);
     }
 
-    public void setHolidays(Set<Holiday> holidays) {
-        this.holidays = holidays;
-    }
 }

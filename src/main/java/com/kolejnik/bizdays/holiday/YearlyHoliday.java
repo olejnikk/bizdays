@@ -2,7 +2,7 @@ package com.kolejnik.bizdays.holiday;
 
 import java.time.LocalDate;
 
-public abstract class YearlyHoliday extends Holiday {
+public abstract class YearlyHoliday implements Holiday {
 
     public abstract LocalDate getByYear(int year);
 

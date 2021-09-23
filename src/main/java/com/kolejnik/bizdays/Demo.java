@@ -1,18 +1,16 @@
 package com.kolejnik.bizdays;
 
 import com.kolejnik.bizdays.calendar.BusinessCalendar;
-import com.kolejnik.bizdays.calendar.BusinessCalendarFactory;
-import com.kolejnik.bizdays.calendar.PolishBusinessCalendarFactory;
+import com.kolejnik.bizdays.calendar.PolishBusinessCalendar;
+import com.kolejnik.bizdays.holiday.CronHoliday;
 import com.kolejnik.bizdays.schedule.BusinessSchedule;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Demo {
-    public static void main(String[] args) throws ParseException {
-        BusinessCalendarFactory pbcf = new PolishBusinessCalendarFactory();
-        BusinessCalendar calendar = pbcf.getInstance();
+    public static void main(String[] args) {
+        BusinessCalendar calendar = PolishBusinessCalendar.getInstance();
 
         System.out.println("Next business day: " + calendar.nextBusinessDay());
 
@@ -33,5 +31,7 @@ public class Demo {
         System.out.println(schedule.minus(LocalDateTime.now(), 4));
         System.out.println(schedule.minus(LocalDateTime.now(), 16));
         System.out.println(schedule.minus(LocalDateTime.now(), 129));
+
+        System.out.println(CronHoliday.SUNDAY);
     }
 }

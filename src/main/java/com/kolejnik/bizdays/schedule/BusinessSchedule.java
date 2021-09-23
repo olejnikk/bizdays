@@ -8,16 +8,14 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 public class BusinessSchedule implements BusinessTimeCalculator {
 
-    private BusinessDayCalculator businessCalendar;
-
-    private BusinessDay defaultBusinessDay = new BusinessDay(8, 0, 16, 0);
-
-    private Map<DayOfWeek, BusinessDay> businessDays;
+    private final BusinessDayCalculator businessCalendar;
+    private final BusinessDay defaultBusinessDay = new BusinessDay(8, 0, 16, 0);
+    private final Map<DayOfWeek, BusinessDay> businessDays = new EnumMap<>(DayOfWeek.class);
 
     public BusinessSchedule(BusinessCalendar calendar) {
         this.businessCalendar = calendar;
@@ -136,17 +134,15 @@ public class BusinessSchedule implements BusinessTimeCalculator {
     }
 
     public BusinessDay putBusinessDay(DayOfWeek dayOfWeek, BusinessDay businessDay) {
-        if (businessDays == null) {
-            businessDays = new HashMap<>();
-        }
         return businessDays.put(dayOfWeek, businessDay);
     }
 
+    public void putBusinessDays(Map<DayOfWeek, BusinessDay> businessDays) {
+        businessDays.putAll(businessDays);
+    }
+
     public BusinessDay removeBusinessDay(DayOfWeek dayOfWeek) {
-        if (businessDays != null) {
-            return businessDays.remove(dayOfWeek);
-        }
-        return null;
+        return businessDays.remove(dayOfWeek);
     }
 
     private boolean isBeforeBusinessDayEnd(LocalDateTime dateTime) {
@@ -165,11 +161,9 @@ public class BusinessSchedule implements BusinessTimeCalculator {
     }
 
     private BusinessDay getBusinessDay(LocalDate date) {
-        if (businessDays != null) {
-            BusinessDay businessDay = businessDays.get(date.getDayOfWeek());
-            if (businessDay != null) {
-                return businessDay;
-            }
+        BusinessDay businessDay = businessDays.get(date.getDayOfWeek());
+        if (businessDay != null) {
+            return businessDay;
         }
         return defaultBusinessDay;
     }
@@ -178,24 +172,12 @@ public class BusinessSchedule implements BusinessTimeCalculator {
         return defaultBusinessDay;
     }
 
-    public void setDefaultBusinessDay(BusinessDay defaultBusinessDay) {
-        this.defaultBusinessDay = defaultBusinessDay;
-    }
-
     public Map<DayOfWeek, BusinessDay> getBusinessDays() {
         return businessDays;
     }
 
-    public void setBusinessDays(Map<DayOfWeek, BusinessDay> businessDays) {
-        this.businessDays = businessDays;
-    }
-
     public BusinessDayCalculator getBusinessCalendar() {
         return businessCalendar;
-    }
-
-    public void setBusinessCalendar(BusinessDayCalculator businessCalendar) {
-        this.businessCalendar = businessCalendar;
     }
 
 }

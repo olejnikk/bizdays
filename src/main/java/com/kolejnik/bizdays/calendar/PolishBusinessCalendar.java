@@ -1,13 +1,13 @@
 package com.kolejnik.bizdays.calendar;
 
 import com.kolejnik.bizdays.holiday.CronHoliday;
-import com.kolejnik.bizdays.holiday.EasterBasedHoliday;
+import com.kolejnik.bizdays.holiday.GregorianEasterBasedHoliday;
 import com.kolejnik.bizdays.holiday.FixedYearlyHoliday;
 import com.kolejnik.bizdays.holiday.Holiday;
 
 import java.time.Month;
 
-public class PolishBusinessCalendarFactory implements BusinessCalendarFactory {
+public class PolishBusinessCalendar extends BusinessCalendar {
 
     public static final Holiday EPIPHANY = new FixedYearlyHoliday(Month.JANUARY, 6);
     public static final Holiday WORKERS_DAY = new FixedYearlyHoliday(Month.MAY, 1);
@@ -18,7 +18,7 @@ public class PolishBusinessCalendarFactory implements BusinessCalendarFactory {
 
     private static BusinessCalendar businessCalendar;
 
-    public BusinessCalendar getInstance() {
+    public static BusinessCalendar getInstance() {
         if (businessCalendar != null) {
             return businessCalendar;
         }
@@ -28,10 +28,10 @@ public class PolishBusinessCalendarFactory implements BusinessCalendarFactory {
         businessCalendar.addHoliday(FixedYearlyHoliday.NEW_YEAR);
         businessCalendar.addHoliday(FixedYearlyHoliday.CHRISTMAS);
         businessCalendar.addHoliday(FixedYearlyHoliday.BOXING_DAY);
-        businessCalendar.addHoliday(EasterBasedHoliday.EASTER);
-        businessCalendar.addHoliday(EasterBasedHoliday.EASTER_MONDAY);
-        businessCalendar.addHoliday(EasterBasedHoliday.CORPUS_CHRISTI);
-        businessCalendar.addHoliday(EasterBasedHoliday.GREEN_WEEK);
+        businessCalendar.addHoliday(GregorianEasterBasedHoliday.EASTER);
+        businessCalendar.addHoliday(GregorianEasterBasedHoliday.EASTER_MONDAY);
+        businessCalendar.addHoliday(GregorianEasterBasedHoliday.CORPUS_CHRISTI);
+        businessCalendar.addHoliday(GregorianEasterBasedHoliday.GREEN_WEEK);
         businessCalendar.addHoliday(EPIPHANY);
         businessCalendar.addHoliday(WORKERS_DAY);
         businessCalendar.addHoliday(MAY_3RD_CONSTITUTION_DAY);
@@ -40,4 +40,5 @@ public class PolishBusinessCalendarFactory implements BusinessCalendarFactory {
         businessCalendar.addHoliday(INDEPENDENCE_DAY);
         return businessCalendar;
     }
+
 }

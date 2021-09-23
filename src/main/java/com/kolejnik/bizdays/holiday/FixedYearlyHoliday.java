@@ -5,9 +5,9 @@ import java.time.Month;
 
 public class FixedYearlyHoliday extends YearlyHoliday {
 
-    public static Holiday NEW_YEAR = new FixedYearlyHoliday(Month.JANUARY, 1);
-    public static Holiday CHRISTMAS = new FixedYearlyHoliday(Month.DECEMBER, 25);
-    public static Holiday BOXING_DAY =  new FixedYearlyHoliday(Month.DECEMBER, 26);
+    public static final Holiday NEW_YEAR = new FixedYearlyHoliday(Month.JANUARY, 1);
+    public static final Holiday CHRISTMAS = new FixedYearlyHoliday(Month.DECEMBER, 25);
+    public static final Holiday BOXING_DAY =  new FixedYearlyHoliday(Month.DECEMBER, 26);
 
     private Month month;
     private int dayOfMonth;

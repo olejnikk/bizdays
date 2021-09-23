@@ -6,7 +6,7 @@ import com.kolejnik.bizdays.holiday.Holiday;
 
 import java.time.Month;
 
-public class AmericanBusinessCalendarFactory implements BusinessCalendarFactory {
+public class AmericanBusinessCalendar extends BusinessCalendar {
 
     private static BusinessCalendar businessCalendar;
 
@@ -19,8 +19,7 @@ public class AmericanBusinessCalendarFactory implements BusinessCalendarFactory 
     public static final Holiday VETERANS_DAY = new FixedYearlyHoliday(Month.NOVEMBER, 11);
     public static final Holiday THANKSGIVING = new CronHoliday("* * * ? NOV THU#4 *");
 
-    @Override
-    public BusinessCalendar getInstance() {
+    public static BusinessCalendar getInstance() {
         if (businessCalendar != null) {
             return businessCalendar;
         }
@@ -40,4 +39,5 @@ public class AmericanBusinessCalendarFactory implements BusinessCalendarFactory 
 
         return businessCalendar;
     }
+
 }

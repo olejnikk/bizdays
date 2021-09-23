@@ -1,12 +1,11 @@
 package com.kolejnik;
 
-import com.kolejnik.bizdays.calendar.AmericanBusinessCalendarFactory;
-import com.kolejnik.bizdays.calendar.BritishBusinessCalendarFactory;
+import com.kolejnik.bizdays.calendar.AmericanBusinessCalendar;
+import com.kolejnik.bizdays.calendar.BritishBusinessCalendar;
 import com.kolejnik.bizdays.calendar.BusinessCalendar;
-import com.kolejnik.bizdays.calendar.BusinessCalendarFactory;
-import com.kolejnik.bizdays.calendar.PolishBusinessCalendarFactory;
+import com.kolejnik.bizdays.calendar.PolishBusinessCalendar;
 import com.kolejnik.bizdays.holiday.CronHoliday;
-import com.kolejnik.bizdays.holiday.EasterBasedHoliday;
+import com.kolejnik.bizdays.holiday.GregorianEasterBasedHoliday;
 import com.kolejnik.bizdays.holiday.FixedYearlyHoliday;
 import com.kolejnik.bizdays.holiday.Holiday;
 import org.junit.Test;
@@ -18,8 +17,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class BusinessCalendarTest {
-
-    private BusinessCalendarFactory pbcf = new PolishBusinessCalendarFactory();
 
     private static String[] easterDates = {"1980-04-06", "1988-04-03", "2002-03-31", "2004-04-11",
             "2010-04-04", "2015-04-05", "2016-03-27", "2017-04-16", "2018-04-01", "2019-04-21",
@@ -42,17 +39,17 @@ public class BusinessCalendarTest {
 
     @Test
     public void easterTest() {
-        testYearlyHoliday(EasterBasedHoliday.EASTER, "Easter", easterDates);
+        testYearlyHoliday(GregorianEasterBasedHoliday.EASTER, "Easter", easterDates);
     }
 
     @Test
     public void testEasterMonday() {
-        testYearlyHoliday(EasterBasedHoliday.EASTER_MONDAY, "Easter monday", easterMondayDates);
+        testYearlyHoliday(GregorianEasterBasedHoliday.EASTER_MONDAY, "Easter monday", easterMondayDates);
     }
 
     @Test
     public void testCorpusChristi() {
-        testYearlyHoliday(EasterBasedHoliday.CORPUS_CHRISTI, "Corpus Christi", corpusChristiDates);
+        testYearlyHoliday(GregorianEasterBasedHoliday.CORPUS_CHRISTI, "Corpus Christi", corpusChristiDates);
     }
 
     @Test
@@ -83,14 +80,14 @@ public class BusinessCalendarTest {
 
     @Test
     public void testIsBusinessDay() {
-        BusinessCalendar calendar = pbcf.getInstance();
+        BusinessCalendar calendar = PolishBusinessCalendar.getInstance();
         LocalDate date = LocalDate.of(2016, 12, 23);
         assertTrue(calendar.isBusinessDay(date));
     }
 
     @Test
     public void testBusinessDayAfter() {
-        BusinessCalendar calendar = pbcf.getInstance();
+        BusinessCalendar calendar = PolishBusinessCalendar.getInstance();
         LocalDate date = LocalDate.of(2016, 12, 23);
         LocalDate nbd = calendar.businessDayAfter(date);
         assertEquals(LocalDate.of(2016, 12, 27), nbd);
@@ -98,7 +95,7 @@ public class BusinessCalendarTest {
 
     @Test
     public void testBusinessDayBefore() {
-        BusinessCalendar calendar = pbcf.getInstance();
+        BusinessCalendar calendar = PolishBusinessCalendar.getInstance();
         LocalDate date = LocalDate.of(2016, 1, 13);
         LocalDate nbd = calendar.businessDayBefore(date);
         assertEquals(LocalDate.of(2016, 1, 12), nbd);
@@ -106,7 +103,7 @@ public class BusinessCalendarTest {
 
     @Test
     public void testBusinessDaysBetween() {
-        BusinessCalendar calendar = pbcf.getInstance();
+        BusinessCalendar calendar = PolishBusinessCalendar.getInstance();
         LocalDate from = LocalDate.of(2016, 1, 13);
         LocalDate to = LocalDate.of(2016, 1, 13);
         assertEquals(1, calendar.businessDaysBetween(from, to));
@@ -121,7 +118,7 @@ public class BusinessCalendarTest {
 
     @Test
     public void testPlus() {
-        BusinessCalendar calendar = pbcf.getInstance();
+        BusinessCalendar calendar = PolishBusinessCalendar.getInstance();
         LocalDate date = LocalDate.of(2016, 1, 13);
         assertEquals(LocalDate.of(2016, 1, 20), calendar.plus(date, 5));
         assertEquals(LocalDate.of(2016, 1, 5), calendar.plus(date, -5));
@@ -129,7 +126,7 @@ public class BusinessCalendarTest {
 
     @Test
     public void testMinus() {
-        BusinessCalendar calendar = pbcf.getInstance();
+        BusinessCalendar calendar = PolishBusinessCalendar.getInstance();
         LocalDate date = LocalDate.of(2016, 1, 13);
         assertEquals(LocalDate.of(2016, 1, 5), calendar.minus(date, 5));
         assertEquals(LocalDate.of(2016, 1, 20), calendar.minus(date, -5));
@@ -137,16 +134,14 @@ public class BusinessCalendarTest {
 
     @Test
     public void shouldBuildAmericanCalendar() {
-        BusinessCalendarFactory factory = new AmericanBusinessCalendarFactory();
-        BusinessCalendar calendar = factory.getInstance();
+        BusinessCalendar calendar = AmericanBusinessCalendar.getInstance();
 
         calendar.businessDayAfter(LocalDate.now());
     }
 
     @Test
     public void shouldBuildBritishCalendar() {
-        BusinessCalendarFactory factory = new BritishBusinessCalendarFactory();
-        BusinessCalendar calendar = factory.getInstance();
+        BusinessCalendar calendar = BritishBusinessCalendar.getInstance();
 
         calendar.businessDayAfter(LocalDate.now());
     }
