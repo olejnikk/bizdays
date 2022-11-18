@@ -4,10 +4,7 @@ import com.kolejnik.bizdays.BusinessDayCalculator;
 import com.kolejnik.bizdays.BusinessTimeCalculator;
 import com.kolejnik.bizdays.calendar.BusinessCalendar;
 
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -51,9 +48,24 @@ public class BusinessSchedule implements BusinessTimeCalculator {
             }
 
             BusinessDay businessDay = getBusinessDay(dateTime);
-            Duration timeLeft = Duration.between(dateTime.toLocalTime(), businessDay.getEndTime());
+            LocalTime timeLocal = dateTime.toLocalTime();
+            Duration timeLeft;
+            if (businessDay.hasBreak() && timeLocal.isBefore(businessDay.getBreakStartTime())) {
+                timeLeft = Duration.between(dateTime.toLocalTime(), businessDay.getBreakStartTime())
+                        .plus(Duration.between(businessDay.getBreakEndTime(), businessDay.getEndTime()));
+            } else if (businessDay.hasBreak() && timeLocal.isAfter(businessDay.getBreakStartTime()) && timeLocal.isBefore(businessDay.getBreakEndTime())) {
+                timeLeft = Duration.between(businessDay.getBreakEndTime(), businessDay.getEndTime());
+            } else {
+                timeLeft = Duration.between(dateTime.toLocalTime(), businessDay.getEndTime());
+            }
             if (duration.compareTo(timeLeft) < 0) {
-                return dateTime.plus(duration);
+                LocalDateTime future = dateTime.plus(duration);
+                if (businessDay.hasBreak()) {
+                    LocalTime flt = future.toLocalTime();
+                    if (flt.isAfter(businessDay.getBreakStartTime()) && (flt.isBefore(businessDay.getBreakEndTime()) || flt.equals(businessDay.getBreakEndTime())))
+                        future = future.plus(Duration.between(businessDay.getBreakStartTime(), businessDay.getBreakEndTime()));
+                }
+                return future;
             }
             duration = duration.minus(timeLeft);
             dateTime = businessDayStartAfter(dateTime);
@@ -74,7 +86,18 @@ public class BusinessSchedule implements BusinessTimeCalculator {
             }
 
             BusinessDay businessDay = getBusinessDay(dateTime);
-            Duration timeLeft = Duration.between(businessDay.getStartTime(), dateTime.toLocalTime());
+
+            LocalTime timeLocal = dateTime.toLocalTime();
+            Duration timeLeft;
+            if (businessDay.hasBreak() && timeLocal.isAfter(businessDay.getBreakEndTime())) {
+                timeLeft = Duration.between(businessDay.getBreakEndTime(), dateTime.toLocalTime())
+                        .plus(Duration.between(businessDay.getStartTime(), businessDay.getBreakEndTime()));
+            } else if (businessDay.hasBreak() && timeLocal.isAfter(businessDay.getBreakStartTime()) && timeLocal.isBefore(businessDay.getBreakEndTime())) {
+                timeLeft = Duration.between(businessDay.getStartTime(), businessDay.getBreakStartTime());
+            } else {
+                timeLeft = Duration.between(businessDay.getStartTime(), dateTime.toLocalTime());
+            }
+
             if (duration.compareTo(timeLeft) < 0) {
                 return dateTime.minus(duration);
             }
