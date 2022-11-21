@@ -4,10 +4,7 @@ import com.kolejnik.bizdays.BusinessDayCalculator;
 import com.kolejnik.bizdays.BusinessTimeCalculator;
 import com.kolejnik.bizdays.calendar.BusinessCalendar;
 
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -46,14 +43,40 @@ public class BusinessSchedule implements BusinessTimeCalculator {
             return minus(dateTime, duration.negated());
         }
         while (!duration.isZero()) {
-            if (!isBusinessTime(dateTime)) {
+            if (!businessCalendar.isBusinessDay(dateTime.toLocalDate())) {
                 dateTime = businessDayStartAfter(dateTime);
+            } else {
+                BusinessDay businessDay = getBusinessDay(dateTime);
+                LocalTime lt = dateTime.toLocalTime();
+                LocalDate date = dateTime.toLocalDate();
+
+                if (lt.isBefore(businessDay.getStartTime()))
+                    dateTime = LocalDateTime.of(date, businessDay.getStartTime());
+                else if (businessDay.hasBreak() && lt.isBefore(businessDay.getBreakEndTime()) && (lt.compareTo(businessDay.getBreakStartTime()) >= 0))
+                    dateTime = LocalDateTime.of(date, businessDay.getBreakEndTime());
+                else if (lt.compareTo(businessDay.getEndTime()) >= 0)
+                    dateTime = businessDayStartAfter(dateTime);
             }
 
             BusinessDay businessDay = getBusinessDay(dateTime);
-            Duration timeLeft = Duration.between(dateTime.toLocalTime(), businessDay.getEndTime());
+            LocalTime timeLocal = dateTime.toLocalTime();
+            Duration timeLeft;
+            if (businessDay.hasBreak() && timeLocal.isBefore(businessDay.getBreakStartTime())) {
+                timeLeft = Duration.between(dateTime.toLocalTime(), businessDay.getBreakStartTime())
+                        .plus(Duration.between(businessDay.getBreakEndTime(), businessDay.getEndTime()));
+            } else if (businessDay.hasBreak() && timeLocal.isAfter(businessDay.getBreakStartTime()) && timeLocal.isBefore(businessDay.getBreakEndTime())) {
+                timeLeft = Duration.between(businessDay.getBreakEndTime(), businessDay.getEndTime());
+            } else {
+                timeLeft = Duration.between(dateTime.toLocalTime(), businessDay.getEndTime());
+            }
             if (duration.compareTo(timeLeft) < 0) {
-                return dateTime.plus(duration);
+                LocalDateTime future = dateTime.plus(duration);
+                if (businessDay.hasBreak()) {
+                    LocalTime flt = future.toLocalTime();
+                    if (flt.isAfter(businessDay.getBreakStartTime()))
+                        future = future.plus(Duration.between(businessDay.getBreakStartTime(), businessDay.getBreakEndTime()));
+                }
+                return future;
             }
             duration = duration.minus(timeLeft);
             dateTime = businessDayStartAfter(dateTime);
@@ -69,14 +92,43 @@ public class BusinessSchedule implements BusinessTimeCalculator {
         }
 
         while (!duration.isZero()) {
-            if (!isBusinessTime(dateTime)) {
+            if (!businessCalendar.isBusinessDay(dateTime.toLocalDate())) {
                 dateTime = businessDayEndBefore(dateTime);
+            } else {
+                BusinessDay businessDay = getBusinessDay(dateTime);
+                LocalTime lt = dateTime.toLocalTime();
+                LocalDate date = dateTime.toLocalDate();
+
+                if (lt.isAfter(businessDay.getEndTime()))
+                    dateTime = LocalDateTime.of(date, businessDay.getEndTime());
+                else if (businessDay.hasBreak() && lt.isAfter(businessDay.getBreakStartTime()) && (lt.compareTo(businessDay.getBreakEndTime()) <= 0))
+                    dateTime = LocalDateTime.of(date, businessDay.getBreakStartTime());
+                else if (lt.compareTo(businessDay.getStartTime()) <= 0)
+                    dateTime = businessDayEndBefore(dateTime);
             }
 
             BusinessDay businessDay = getBusinessDay(dateTime);
-            Duration timeLeft = Duration.between(businessDay.getStartTime(), dateTime.toLocalTime());
+
+            LocalTime timeLocal = dateTime.toLocalTime();
+            Duration timeLeft;
+            if (businessDay.hasBreak() && timeLocal.isAfter(businessDay.getBreakEndTime())) {
+                timeLeft = Duration.between(businessDay.getBreakEndTime(), timeLocal)
+                        .plus(Duration.between(businessDay.getStartTime(), businessDay.getBreakStartTime()));
+            } else if (businessDay.hasBreak() && timeLocal.isAfter(businessDay.getBreakStartTime()) && timeLocal.isBefore(businessDay.getBreakEndTime())) {
+                timeLeft = Duration.between(businessDay.getStartTime(), businessDay.getBreakStartTime());
+            } else {
+                timeLeft = Duration.between(businessDay.getStartTime(), timeLocal);
+            }
+
             if (duration.compareTo(timeLeft) < 0) {
-                return dateTime.minus(duration);
+                LocalDateTime past = dateTime.minus(duration);
+                if (businessDay.hasBreak()) {
+                    LocalTime flt = past.toLocalTime();
+                    if (flt.isBefore(businessDay.getBreakEndTime()))
+                        past = past.minus(Duration.between(businessDay.getBreakStartTime(), businessDay.getBreakEndTime()));
+                }
+                return past;
+
             }
             duration = duration.minus(timeLeft);
             dateTime = businessDayEndBefore(dateTime);
@@ -161,7 +213,9 @@ public class BusinessSchedule implements BusinessTimeCalculator {
     }
 
     private BusinessDay getBusinessDay(LocalDate date) {
-        BusinessDay businessDay = businessDays.get(date.getDayOfWeek());
+        BusinessDay businessDay = businessCalendar.getDateBasedBusinessDay(date);
+        if (businessDay == null)
+            businessDay = businessDays.get(date.getDayOfWeek());
         if (businessDay != null) {
             return businessDay;
         }
