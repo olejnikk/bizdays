@@ -3,11 +3,10 @@ package com.kolejnik.bizdays.calendar;
 import com.kolejnik.bizdays.BusinessDayCalculator;
 import com.kolejnik.bizdays.InvalidHolidayException;
 import com.kolejnik.bizdays.holiday.Holiday;
+import com.kolejnik.bizdays.schedule.BusinessDay;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class BusinessCalendar implements BusinessDayCalculator {
 
@@ -19,6 +18,7 @@ public class BusinessCalendar implements BusinessDayCalculator {
     private static final int MAX_BUSINESS_DAYS_BLOCK = 1461;
 
     private final Set<Holiday> holidays = new HashSet<>();
+    private final Map<LocalDate, BusinessDay> dateBasedBizDays = new HashMap<>();
 
     @Override
     public boolean isBusinessDay(LocalDate date) {
@@ -95,6 +95,11 @@ public class BusinessCalendar implements BusinessDayCalculator {
         return plus(date, -businessDaysCount);
     }
 
+    @Override
+    public BusinessDay getDateBasedBusinessDay(LocalDate date) {
+        return dateBasedBizDays.get(date);
+    }
+
     public boolean addHoliday(Holiday holiday) {
         return holidays.add(holiday);
     }
@@ -111,4 +116,11 @@ public class BusinessCalendar implements BusinessDayCalculator {
         return new HashSet<>(holidays);
     }
 
+    public void addDateBasedBusinessDay(LocalDate date, BusinessDay businessDay) {
+        dateBasedBizDays.put(date, businessDay);
+    }
+
+    public void removeDateBasedBusinessDay(LocalDate date) {
+        dateBasedBizDays.remove(date);
+    }
 }

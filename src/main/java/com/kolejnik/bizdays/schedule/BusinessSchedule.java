@@ -213,7 +213,9 @@ public class BusinessSchedule implements BusinessTimeCalculator {
     }
 
     private BusinessDay getBusinessDay(LocalDate date) {
-        BusinessDay businessDay = businessDays.get(date.getDayOfWeek());
+        BusinessDay businessDay = businessCalendar.getDateBasedBusinessDay(date);
+        if (businessDay == null)
+            businessDay = businessDays.get(date.getDayOfWeek());
         if (businessDay != null) {
             return businessDay;
         }

@@ -1,5 +1,7 @@
 package com.kolejnik.bizdays;
 
+import com.kolejnik.bizdays.schedule.BusinessDay;
+
 import java.time.LocalDate;
 
 public interface BusinessDayCalculator {
@@ -19,5 +21,7 @@ public interface BusinessDayCalculator {
     LocalDate plus(LocalDate date, int businessDaysCount);
 
     LocalDate minus(LocalDate date, int businessDaysCount);
+
+    BusinessDay getDateBasedBusinessDay(LocalDate date);
 
 }
