@@ -16,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 public class BusinessScheduleTest {
 
-    private BusinessSchedule schedule = new BusinessSchedule(PolishBusinessCalendar.getInstance());
+    private final BusinessSchedule schedule = new BusinessSchedule(PolishBusinessCalendar.getInstance());
 
     {
         schedule.putBusinessDay(DayOfWeek.MONDAY, new BusinessDay(LocalTime.of(8, 0), LocalTime.of(17, 0), LocalTime.of(12, 0), LocalTime.of(13, 0)));
@@ -40,17 +40,22 @@ public class BusinessScheduleTest {
     public void testPlus() {
         LocalDateTime dateTime = LocalDateTime.of(2022, 11, 17, 15, 0);
         // check thu->fri
-        assertEquals(LocalDateTime.of(2022, 11, 18, 11, 0), schedule.plus(dateTime, Duration.ofHours(6)));
+        assertEquals(LocalDateTime.of(2022, 11, 18, 12, 0), schedule.plus(dateTime, Duration.ofHours(6)));
         // check thu->mon
         assertEquals(LocalDateTime.of(2022, 11, 21, 14, 0), schedule.plus(dateTime, Duration.ofHours(15)));
+        // a week ahead
+        assertEquals(LocalDateTime.of(2022, 11, 24, 15, 0), schedule.plus(dateTime, Duration.ofHours(36)));
     }
 
     @Test
     public void testMinus() {
         LocalDateTime dateTime = LocalDateTime.of(2022, 11, 17, 15, 0);
         // thu -> wed
-        assertEquals(LocalDateTime.of(2022, 11, 12, 8, 0), schedule.minus(dateTime, Duration.ofHours(9)));
-        assertEquals(LocalDateTime.of(2016, 1, 4, 15, 0), schedule.minus(dateTime, Duration.ofHours(40)));
+        assertEquals(LocalDateTime.of(2022, 11, 16, 14, 0), schedule.minus(dateTime, Duration.ofHours(9)));
+        assertEquals(LocalDateTime.of(2022, 11, 15, 13, 0), schedule.minus(dateTime, Duration.ofHours(16)));
+        // a week ago
+        // nov 11 - independence day in Poland
+        assertEquals(LocalDateTime.of(2022, 11, 9, 15, 0), schedule.minus(dateTime, Duration.ofHours(36)));
     }
 
 }
